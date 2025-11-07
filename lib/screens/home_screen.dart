@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:puzzlers/data/preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/helpers/app_colors.dart';
 import 'package:puzzlers/helpers/app_images.dart';
 import 'package:puzzlers/screens/layout/screen_layout.dart';
@@ -15,23 +16,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
 
-  String? _name;
 
   // ANIMATION CONTROLLER
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
-  Future<void> _getName() async {
-    final name = await Preferences.getUsername();
-    if (mounted) {
-      setState(() => _name = name);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _getName();
 
     _controller = AnimationController(
       vsync: this,
@@ -59,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               children: [
                 InkWell(
-                  onTap: (){},
+                  onTap: ()=>context.push('/profile'),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -72,9 +64,16 @@ class _HomeScreenState extends State<HomeScreen>
                         child: ClipOval(child: Image.asset(AppImages.profile1, width: 55, height: 55,),),
                       ),
                       const SizedBox(width: 10,),
-                      Column( children: [
-                        Text(_name ?? 'Guest', style:const TextStyle( color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15 ),),
-                        Image.asset(AppImages.logo, width: 50, height: 50,), ], )
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Selector<UserProvider, String>(
+                          selector: (_, prov)=>prov.username,
+                          builder: (_, value, _)=>Text(value, style:const TextStyle( color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15 ),),),
+                          Selector<UserProvider, String>(
+                            selector: (_, prov)=>prov.rank,
+                            builder: (_, value, _)=>Image.asset(value, width: 50, height: 50,),)
+                    ], )
                     ],
                   ),
                 ),
@@ -107,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: InkWell(
-                    onTap: () => context.push('/game-level'),
+                    onTap: () => context.push('/level'),
                     child: Container(
                       padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
