@@ -11,6 +11,7 @@ class AppImages {
   static const String setting = '$_baseUrl/setting.webp';
   static const String arrowLeft = '$_baseUrl/arrowLeft.webp';
   static const String point = '$_baseUrl/point.webp';
+  static const String buttonLevel = '$_baseUrl/button.webp';
 
   //RANK
   static const String beginner = '$_baseUrl/beginner.webp';
@@ -19,4 +20,11 @@ class AppImages {
 
   // PROFILE
   static final String profile1 = '$_profile/1.webp';
+  static final String profile2 = '$_profile/2.webp';
+  static final String profile3 = '$_profile/3.webp';
+  static final String profile4 = '$_profile/4.webp';
+  static final String profile5 = '$_profile/5.webp';
+  static final String profile6 = '$_profile/6.webp';
+
+  static final List<String> profileList = [profile1, profile2, profile3, profile4, profile5, profile6];
 }

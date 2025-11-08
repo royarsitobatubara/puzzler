@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:puzzlers/data/sound_manager.dart';
 import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/helpers/app_colors.dart';
 import 'package:puzzlers/helpers/app_images.dart';
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               children: [
                 InkWell(
-                  onTap: ()=>context.push('/profile'),
+                  onTap: (){SoundManager().playClick(); context.push('/profile');},
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -61,7 +62,8 @@ class _HomeScreenState extends State<HomeScreen>
                           color: Colors.white.withValues(alpha: .5),
                           shape: BoxShape.circle,
                           boxShadow: [BoxShadow(color:AppColors.primary.withValues(alpha: .5), offset: const Offset(0, 8), blurRadius: 8)] ),
-                        child: ClipOval(child: Image.asset(AppImages.profile1, width: 55, height: 55,),),
+                        child: Selector<UserProvider, String>(
+                            builder: (_, value, _)=>ClipOval(child: Image.asset(value, width: 55, height: 55,),), selector: (_, prov)=> prov.profile),
                       ),
                       const SizedBox(width: 10,),
                       Column(
@@ -159,7 +161,10 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(seconds: 3),
       turns: 1,
       child: InkWell(
-        onTap: onTap,
+        onTap: (){
+          SoundManager().playClick();
+          onTap();
+        },
         child: Container(
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(

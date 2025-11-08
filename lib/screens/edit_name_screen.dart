@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:puzzlers/data/preferences.dart';
+import 'package:puzzlers/data/sound_manager.dart';
 import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/helpers/app_colors.dart';
 import 'package:puzzlers/helpers/app_images.dart';
@@ -100,26 +101,23 @@ class _EditNameScreenState extends State<EditNameScreen> with SingleTickerProvid
                 ),
               ),
 
-              const SizedBox(height: 25),
-
+              const SizedBox(height: 30),
               SizedBox(
-                width: double.infinity,
+                width: double.maxFinite,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_nameController.text.trim().isEmpty) return;
-                    _editHandle();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                  ),
-                  child: const Text(
-                    "Save",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      fontSize: 15
+                    onPressed: () {
+                      SoundManager().playClick();
+                      if (_nameController.text.trim().isEmpty) return;
+                      _editHandle();
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary
                     ),
-                  ),
+                    child: const Text("Submit", style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17
+                    ),)
                 ),
               ),
             ],

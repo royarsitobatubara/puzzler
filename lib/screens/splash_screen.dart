@@ -17,6 +17,12 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       await Future.delayed(const Duration(seconds: 2));
       final isLogin = await Preferences.getIsLogin();
+      // if (!mounted) return;
+      // final soundOn = context.watch<UserProvider>().backSound;
+      // soundOn
+      //     ? SoundManager().playBackground()
+      //     : SoundManager().stopBackground();
+
       if(!isLogin){
         if (!mounted) return;
         context.go('/signIn');

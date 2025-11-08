@@ -6,17 +6,20 @@ class UserProvider extends ChangeNotifier {
   String _username='';
   String _profile='';
   String _rank='';
+  bool _backSound = false;
   int _point=0;
 
   String get username => _username;
   String get profile => _profile;
   String get rank => _rank;
+  bool get backSound => _backSound;
   int get point => _point;
 
   UserProvider(){
     getName();
     getPoint();
     getProfile();
+    getBackSound();
   }
 
   void changeName(String username)async{
@@ -49,5 +52,17 @@ class UserProvider extends ChangeNotifier {
     _rank = await Preferences.getRank();
     notifyListeners();
   }
+
+  void getBackSound() async {
+    _backSound = await Preferences.getBackSound();
+    notifyListeners();
+  }
+
+  Future<void> toggleBackSound() async {
+    _backSound = !_backSound;
+    await Preferences.setBackSound(_backSound);
+    notifyListeners();
+  }
+
 
 }

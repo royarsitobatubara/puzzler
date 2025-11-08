@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:puzzlers/data/sound_manager.dart';
 import 'package:puzzlers/helpers/app_images.dart';
 import 'package:puzzlers/screens/layout/screen_layout.dart';
 
@@ -49,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProvid
             Row(
               children: [
                 InkWell(
-                  onTap: () => context.pop(),
+                  onTap: (){SoundManager().playClick();context.pop();},
                   child: Image.asset(AppImages.arrowLeft,
                       width: 50, height: 50),
                 ),

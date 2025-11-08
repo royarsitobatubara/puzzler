@@ -23,6 +23,25 @@ class Preferences {
     }
   }
 
+  static Future<bool> getBackSound() async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('backSound') ?? true;
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada getBackSound: $e');
+      return false;
+    }
+  }
+
+  static Future<void> setBackSound(bool value) async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('backSound', value);
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada setBackSound: $e');
+    }
+  }
+
   static Future<void> setUsername(String username) async {
     try{
       final prefs = await SharedPreferences.getInstance();

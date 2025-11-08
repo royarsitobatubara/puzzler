@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/router.dart';
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MultiProvider(
