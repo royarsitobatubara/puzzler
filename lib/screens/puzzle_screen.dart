@@ -7,6 +7,9 @@ import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:image/image.dart' as image;
+import 'package:provider/provider.dart';
+import 'package:puzzlers/data/preferences.dart';
+import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/helpers/app_images.dart';
 
 // Make stateful widget for testing
@@ -155,7 +158,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   }
 }
 
-// Stateful widget
+// <============================================================= SlidePuzzleWidget ==============================================================>
 class SlidePuzzleWidget extends StatefulWidget {
   final Size size;
   final double innerPadding;
@@ -175,6 +178,8 @@ class SlidePuzzleWidget extends StatefulWidget {
   @override
   State<SlidePuzzleWidget> createState() => _SlidePuzzleWidgetState();
 }
+
+
 
 class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTickerProviderStateMixin {
   final GlobalKey _globalKey = GlobalKey();
@@ -309,109 +314,9 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
     );
   }
 
-  void _showSuccessDialog() {
-    _stopTimer();
-    int timeUsed = 120 - _remainingSeconds;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Row(
-            children: [
-              Icon(Icons.emoji_events, color: Colors.amber, size: 30),
-              SizedBox(width: 10),
-              Text('🎉 Selamat!', style: TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.celebration, size: 60, color: Colors.purple[300]),
-              const SizedBox(height: 15),
-              const Text(
-                'Anda berhasil menyelesaikan puzzle!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 15),
-              Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.purple[50],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.timer, size: 20, color: Colors.deepPurple),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Waktu: ${_formatTime(timeUsed)}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.touch_app, size: 20, color: Colors.deepPurple),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Gerakan: $_moveCount',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                generatePuzzle();
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.green[400],
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Main Lagi', style: TextStyle(color: Colors.white)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: const Text('Keluar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final change = context.read<UserProvider>().change;
     size = Size(
       widget.size.width - widget.innerPadding * 2,
       widget.size.width - widget.innerPadding,
@@ -651,9 +556,18 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
               ),
             ),
             ElevatedButton.icon(
-              onPressed: (startSlide || isShuffling) ? null : () => reversePuzzle(),
+              onPressed: () async{
+                var oldChange = await Preferences.getChange();
+                if(oldChange != 0 || startSlide || isShuffling){
+                  reversePuzzle();
+                  await Preferences.setChange((oldChange -= 1));
+                }
+                if(!context.mounted)return;
+                context.read<UserProvider>().getChange();
+
+              },
               icon: const Icon(Icons.replay),
-              label: const Text('Kembalikan'),
+              label: const Text('Selesaikan'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[400],
                 foregroundColor: Colors.white,
@@ -665,6 +579,8 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
             ),
           ],
         ),
+        const SizedBox(height: 10,),
+        Text('Kesempatan selesaikan: $change', style: const TextStyle(color: Colors.white),)
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:puzzlers/data/preferences.dart';
 import 'package:puzzlers/data/sound_manager.dart';
 import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/helpers/app_images.dart';
@@ -22,9 +23,19 @@ class _SettingsScreenState extends State<SettingsScreen>
   bool _isBgMusicEnabled = true;
   bool _isSfxEnabled = true;
 
+  Future<void> getActiveButton() async {
+    final sfx = await Preferences.getSoundEffect();
+    final sound = await Preferences.getBackSound();
+    setState(() {
+      _isBgMusicEnabled = sound;
+      _isSfxEnabled = sfx;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getActiveButton();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -52,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen>
     super.dispose();
   }
 
-  void _toggleBgMusic(bool value) {
+  void _toggleBgMusic(bool value)async {
     setState(() => _isBgMusicEnabled = value);
     if (value) {
       SoundManager().resumeBackground();
@@ -60,14 +71,16 @@ class _SettingsScreenState extends State<SettingsScreen>
       SoundManager().pauseBackground();
     }
     SoundManager().playClick();
+    await Preferences.setBackSound(value);
   }
 
-  void _toggleSfx(bool value) {
+  void _toggleSfx(bool value) async {
     setState(() => _isSfxEnabled = value);
     SoundManager().toggleSound();
     if (value) {
       SoundManager().playClick();
     }
+    await Preferences.setSoundEffect(value);
   }
 
   @override

@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:puzzlers/data/sound_manager.dart';
 import 'package:puzzlers/data/user_provider.dart';
 import 'package:puzzlers/router.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  UserProvider().getBackSound();
+  final bs = UserProvider().backSound;
+  if(bs){
+    SoundManager().playBackground();
+  }else{
+    SoundManager().stopBackground();
+  }
   runApp(
     MultiProvider(
       providers: [

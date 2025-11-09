@@ -1,4 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+import 'package:puzzlers/data/preferences.dart';
 import 'package:puzzlers/helpers/app_sounds.dart';
 
 class SoundManager {
@@ -32,9 +34,9 @@ class SoundManager {
       await _bgPlayer.setVolume(0.3);
       await _bgPlayer.play(AssetSource(AppSounds.backSound));
       _isBgPlaying = true;
-      print('✅ Background music started');
+      debugPrint('✅ Background music started');
     } catch (e) {
-      print('❌ Error playing background: $e');
+      debugPrint('❌ Error playing background: $e');
     }
   }
 
@@ -42,9 +44,9 @@ class SoundManager {
     try {
       await _bgPlayer.stop();
       _isBgPlaying = false;
-      print('⏹️ Background music stopped');
+      debugPrint('⏹️ Background music stopped');
     } catch (e) {
-      print('❌ Error stopping background: $e');
+      debugPrint('❌ Error stopping background: $e');
     }
   }
 
@@ -52,9 +54,9 @@ class SoundManager {
     try {
       await _bgPlayer.pause();
       _isBgPlaying = false;
-      print('⏸️ Background music paused');
+      debugPrint('⏸️ Background music paused');
     } catch (e) {
-      print('❌ Error pausing background: $e');
+      debugPrint('❌ Error pausing background: $e');
     }
   }
 
@@ -64,50 +66,55 @@ class SoundManager {
     try {
       await _bgPlayer.resume();
       _isBgPlaying = true;
-      print('▶️ Background music resumed');
+      debugPrint('▶️ Background music resumed');
     } catch (e) {
-      print('❌ Error resuming background: $e');
+      debugPrint('❌ Error resuming background: $e');
     }
   }
 
   Future<void> playClick() async {
-    if (!_isSoundEnabled) return;
+    final isActive = await Preferences.getSoundEffect();
+
+    if (!_isSoundEnabled || isActive == false) {
+      return;
+    }
 
     try {
-      // Stop dulu kalau masih playing
       await _sfxPlayer.stop();
-
-      // Set mode dan volume
       await _sfxPlayer.setReleaseMode(ReleaseMode.stop);
       await _sfxPlayer.setVolume(1.0);
 
-      // Play sound
       await _sfxPlayer.play(AssetSource(AppSounds.clickSound));
-      print('🔊 Click sound played');
+      debugPrint('🔊 Click sound played');
     } catch (e) {
-      print('❌ Error playing click: $e');
+      debugPrint('❌ Error playing click: $e');
     }
   }
 
+
   // Method untuk play sound lain (opsional)
   Future<void> playSound(String soundPath, {double volume = 1.0}) async {
-    if (!_isSoundEnabled) return;
+    final isActive = await Preferences.getSoundEffect();
+
+    if (!_isSoundEnabled || isActive == false) {
+      return;
+    }
 
     try {
       await _sfxPlayer.stop();
       await _sfxPlayer.setReleaseMode(ReleaseMode.stop);
       await _sfxPlayer.setVolume(volume);
       await _sfxPlayer.play(AssetSource(soundPath));
-      print('🔊 Sound played: $soundPath');
+      debugPrint('🔊 Sound played: $soundPath');
     } catch (e) {
-      print('❌ Error playing sound: $e');
+      debugPrint('❌ Error playing sound: $e');
     }
   }
 
   void dispose() {
     _bgPlayer.dispose();
     _sfxPlayer.dispose();
-    print('🗑️ Sound manager disposed');
+    debugPrint('🗑️ Sound manager disposed');
   }
 }
 

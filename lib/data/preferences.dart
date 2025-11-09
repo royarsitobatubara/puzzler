@@ -42,6 +42,25 @@ class Preferences {
     }
   }
 
+  static Future<bool> getSoundEffect() async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('soundEffect') ?? true;
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada getSoundEffect: $e');
+      return false;
+    }
+  }
+
+  static Future<void> setSoundEffect(bool value) async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('soundEffect', value);
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada setSoundEffect: $e');
+    }
+  }
+
   static Future<void> setUsername(String username) async {
     try{
       final prefs = await SharedPreferences.getInstance();
@@ -112,9 +131,9 @@ class Preferences {
     try{
       final point = await getPoint();
 
-      if(point < 100){
+      if(point < 500){
         return AppImages.beginner;
-      } else if(point >= 100 && point < 500) {
+      } else if(point >= 500 && point < 1000) {
         return AppImages.intimidate;
       } else {
         return AppImages.expert;
@@ -144,5 +163,25 @@ class Preferences {
       return 0;
     }
   }
+
+  static Future<void> setChange(int point) async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('change', point);
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada setLevel: $e');
+    }
+  }
+
+  static Future<int> getChange() async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getInt('change') ?? 10;
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada getLevel: $e');
+      return 10;
+    }
+  }
+
 
 }
