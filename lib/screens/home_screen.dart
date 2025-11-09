@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                 const Spacer(),
 
-                Text(
+                const Text(
                   "v1.0.0",
                   style: TextStyle(
                     color: Colors.white54,

@@ -42,7 +42,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(AppImages.background),
             fit: BoxFit.cover,
@@ -85,9 +85,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ),
                       if(_msg != null)
-                        Align(
+                        const Align(
                             alignment: Alignment.centerRight,
-                            child: const Text('Username is required!', style: TextStyle(
+                            child: Text('Username is required!', style: TextStyle(
                                 color: Colors.redAccent,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16

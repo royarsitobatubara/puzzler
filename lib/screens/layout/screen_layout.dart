@@ -13,7 +13,7 @@ class ScreenLayout extends StatelessWidget {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage(AppImages.background),
               fit: BoxFit.cover,
@@ -27,7 +27,8 @@ class ScreenLayout extends StatelessWidget {
               SafeArea(child: child)
             ],
           ),
-        )
+        ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }

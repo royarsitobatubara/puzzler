@@ -9,19 +9,31 @@ import 'package:puzzlers/screens/puzzle_screen.dart';
 import 'package:puzzlers/screens/settings_screen.dart';
 import 'package:puzzlers/screens/sign_in_screen.dart';
 import 'package:puzzlers/screens/splash_screen.dart';
+import 'package:puzzlers/screens/winner_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/splash',
   routes: [
-    GoRoute(path: '/splash', builder: (context, state) => SplashScreen()),
-    GoRoute(path: '/signIn', builder: (context, state) => SignInScreen()),
+    GoRoute(path: '/splash', builder: (context, state) =>const SplashScreen()),
+    GoRoute(path: '/signIn', builder: (context, state) =>const SignInScreen()),
     GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
-    GoRoute(path: '/puzzle', builder: (context, state) => PuzzleScreen()),
-    GoRoute(path: '/profile', builder: (context, state) => ProfileScreen()),
-    GoRoute(path: '/settings', builder: (context, state) => SettingsScreen()),
-    GoRoute(path: '/info', builder: (context, state) => InfoScreen()),
-    GoRoute(path: '/edit-name', builder: (context, state) => EditNameScreen()),
-    GoRoute(path: '/edit-photo', builder: (context, state) => EditPhotoScreen()),
-    GoRoute(path: '/level', builder: (context, state) => LevelPuzzleScreen()),
+    GoRoute(path: '/puzzle', builder: (context, state){
+        final level = state.extra.toString();
+        return PuzzleScreen(level: level,);
+    }),
+    GoRoute(path: '/winner', builder: (context, state){
+      final data = state.extra as Map<String, dynamic>;
+      return WinnerScreen(
+        level: data['level'].toString(),
+        move: data['move'],
+        timer: data['timer'],
+      );
+    }),
+    GoRoute(path: '/profile', builder: (context, state) =>const ProfileScreen()),
+    GoRoute(path: '/settings', builder: (context, state) =>const SettingsScreen()),
+    GoRoute(path: '/info', builder: (context, state) =>const InfoScreen()),
+    GoRoute(path: '/edit-name', builder: (context, state) =>const EditNameScreen()),
+    GoRoute(path: '/edit-photo', builder: (context, state) =>const EditPhotoScreen()),
+    GoRoute(path: '/level', builder: (context, state) =>const LevelPuzzleScreen()),
   ]
 );
