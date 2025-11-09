@@ -220,7 +220,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
   }
 
   void _startTimer() {
-    _remainingSeconds = 120;
+    _remainingSeconds = 300;
     _isGameActive = true;
     _moveCount = 0;
     _timer?.cancel();
