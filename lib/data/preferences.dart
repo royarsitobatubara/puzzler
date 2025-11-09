@@ -126,5 +126,23 @@ class Preferences {
     }
   }
 
+  static Future<void> setLevel(int point) async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('level', point);
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada setLevel: $e');
+    }
+  }
+
+  static Future<int> getLevel() async {
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getInt('level') ?? 0;
+    }catch(e){
+      debugPrint('Terjadi kesalahan pada getLevel: $e');
+      return 0;
+    }
+  }
 
 }

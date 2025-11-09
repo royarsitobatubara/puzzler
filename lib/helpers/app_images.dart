@@ -27,5 +27,11 @@ class AppImages {
   static const String profile5 = '$_profile/5.webp';
   static const String profile6 = '$_profile/6.webp';
 
+  //MODEL PUZZLE
+  static const String duck = '$_baseUrl/duck.png';
+  static const String butterfly = '$_baseUrl/butterfly.png';
+  static const String owl = '$_baseUrl/owl.png';
+
   static final List<String> profileList = [profile1, profile2, profile3, profile4, profile5, profile6];
+  static final List<String> puzzleList = [duck, butterfly, owl];
 }

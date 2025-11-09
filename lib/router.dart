@@ -18,8 +18,8 @@ final router = GoRouter(
     GoRoute(path: '/signIn', builder: (context, state) =>const SignInScreen()),
     GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/puzzle', builder: (context, state){
-        final level = state.extra.toString();
-        return PuzzleScreen(level: level,);
+        final data = state.extra as Map<String, dynamic>;
+        return PuzzleScreen(level: data['level'].toString(), size: data['count'],);
     }),
     GoRoute(path: '/winner', builder: (context, state){
       final data = state.extra as Map<String, dynamic>;

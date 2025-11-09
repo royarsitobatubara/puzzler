@@ -8,18 +8,21 @@ class UserProvider extends ChangeNotifier {
   String _rank='';
   bool _backSound = false;
   int _point=0;
+  int _level = 1;
 
   String get username => _username;
   String get profile => _profile;
   String get rank => _rank;
   bool get backSound => _backSound;
   int get point => _point;
+  int get level => _level;
 
   UserProvider(){
     getName();
     getPoint();
     getProfile();
     getBackSound();
+    getLevel();
   }
 
   void changeName(String username)async{
@@ -64,5 +67,10 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void getLevel() async {
+    final data = await Preferences.getLevel();
+    _level = data;
+    notifyListeners();
+  }
 
 }

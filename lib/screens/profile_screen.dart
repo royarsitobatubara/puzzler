@@ -549,6 +549,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildStatsCard({required int index}) {
+    final data = context.read<UserProvider>();
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + (index * 100)),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -625,13 +626,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                 _buildStatItem(
                   Icons.sports_esports,
                   'Games',
-                  '0',
+                  (data.point / 10).round().toString(),
                   Colors.green,
                 ),
                 _buildStatItem(
                   Icons.check_circle,
                   'Completed',
-                  '0',
+                  data.level.toString(),
                   Colors.blue,
                 ),
                 _buildStatItem(

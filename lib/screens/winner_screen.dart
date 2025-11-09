@@ -293,22 +293,60 @@ class _WinnerScreenState extends State<WinnerScreen>
                         opacity: _fadeAnimation,
                         child:SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: ()async{
-                              final oldPoint = await Preferences.getPoint();
-                              await Preferences.setPoint(oldPoint + 10);
-                              if(!context.mounted)return;
-                              context.read<UserProvider>().getPoint();
-                              context.go('/home');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.greenAccent
-                            ),
-                            child: const Text('Submit', style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: Colors.black
-                          ),)),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                    onPressed: ()async{
+                                      final oldPoint = await Preferences.getPoint();
+                                      await Preferences.setPoint(oldPoint + 10);
+                                      final oldLevel = await Preferences.getLevel();
+                                      if(oldLevel < int.parse(widget.level)){
+                                        await Preferences.setLevel(int.parse(widget.level));
+                                      }
+                                      if(!context.mounted)return;
+                                      context.read<UserProvider>().getPoint();
+                                      context.read<UserProvider>().getLevel();
+                                      context.go('/home');
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white
+                                    ),
+                                    child: const Text('Simpan', style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        color: Colors.black
+                                    ),)),
+                              ),
+                              const SizedBox(width: 20,),
+                              Expanded(
+                                child: ElevatedButton(
+                                    onPressed: ()async{
+                                      final oldPoint = await Preferences.getPoint();
+                                      await Preferences.setPoint(oldPoint + 10);
+                                      final oldLevel = await Preferences.getLevel();
+                                      if(oldLevel < int.parse(widget.level)){
+                                        await Preferences.setLevel(int.parse(widget.level));
+                                      }
+                                      if(!context.mounted)return;
+                                      context.read<UserProvider>().getPoint();
+                                      context.read<UserProvider>().getLevel();
+                                      context.go('/puzzle', extra:  {
+                                        'level': (int.parse(widget.level) + 1).toString(),
+                                        'count': int.parse(widget.level) + 2
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.greenAccent
+                                    ),
+                                    child: const Text('Next', style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        color: Colors.black
+                                    ),)),
+                              ),
+                            ],
+                          )
                         )
                       ),
 

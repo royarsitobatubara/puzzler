@@ -12,7 +12,8 @@ import 'package:puzzlers/helpers/app_images.dart';
 // Make stateful widget for testing
 class PuzzleScreen extends StatefulWidget {
   final String level;
-  const PuzzleScreen({super.key, required this.level});
+  final int size;
+  const PuzzleScreen({super.key, required this.level, required this.size});
 
   @override
   State<PuzzleScreen> createState() => _PuzzleScreenState();
@@ -21,24 +22,41 @@ class PuzzleScreen extends StatefulWidget {
 class _PuzzleScreenState extends State<PuzzleScreen> {
   int? valueSlider;
   final GlobalKey<_SlidePuzzleWidgetState> globalKey = GlobalKey();
-
+  final imgPuzzle = AppImages.puzzleList[Random().nextInt(AppImages.puzzleList.length)];
   @override
   Widget build(BuildContext context) {
     String level = widget.level;
-    if(level == 'easy'){
-      valueSlider = 2;
-    }else if(level == 'medium'){
-      valueSlider = 4;
-    }else{
-      valueSlider = 6;
-    }
-
+    valueSlider = widget.size;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
+        leading: GestureDetector(
+            onTap: () {
+              if (Navigator.of(context).canPop()) {
+                context.pop();
+              } else {
+                context.go('/home');
+              }
+            },
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: .2),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: .3),
+              width: 2,
+            ),
+          ),
+          child: Image.asset(
+            AppImages.arrowLeft,
+            width: 34,
+            height: 34,
+          ),
+        ),),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
@@ -116,8 +134,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                               key: globalKey,
                               size: Size(size, size),
                               sizePuzzle: valueSlider!,
-                              imageBckGround: const Image(
-                                image: AssetImage("assets/images/appIcon.png"),
+                              imageBckGround: Image(
+                                image: AssetImage(imgPuzzle),
                               ),
                               level: level,
                             ),
@@ -278,7 +296,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                context.go('/home');
               },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
