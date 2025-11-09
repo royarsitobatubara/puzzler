@@ -183,5 +183,10 @@ class Preferences {
     }
   }
 
+  static Future<void> clearData()async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
 
 }
