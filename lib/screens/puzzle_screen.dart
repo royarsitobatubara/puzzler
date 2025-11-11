@@ -195,7 +195,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
 
   // Timer variables
   Timer? _timer;
-  int _remainingSeconds = 120;
+  int _remainingSeconds = 300;
   bool _isGameActive = false;
   int _moveCount = 0;
 
@@ -819,7 +819,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
       context.go('/winner', extra: {
         'level': widget.level,
         'move': _moveCount,
-        'timer': _formatTime(120 - _remainingSeconds)
+        'timer': _formatTime(300 - _remainingSeconds)
       });
     } else {
       success = false;
