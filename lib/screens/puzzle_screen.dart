@@ -37,29 +37,29 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
         elevation: 0,
         centerTitle: true,
         leading: GestureDetector(
-            onTap: () {
-              if (Navigator.of(context).canPop()) {
-                context.pop();
-              } else {
-                context.go('/home');
-              }
-            },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .2),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: .3),
-              width: 2,
+          onTap: () {
+            if (Navigator.of(context).canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .2),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: .3),
+                width: 2,
+              ),
             ),
-          ),
-          child: Image.asset(
-            AppImages.arrowLeft,
-            width: 34,
-            height: 34,
-          ),
-        ),),
+            child: Image.asset(
+              AppImages.arrowLeft,
+              width: 34,
+              height: 34,
+            ),
+          ),),
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
@@ -192,6 +192,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
   List<int> process = [];
   bool finishSwap = false;
   bool isShuffling = false;
+  bool isAutoSolving = false;
 
   // Timer variables
   Timer? _timer;
@@ -400,10 +401,10 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
             borderRadius: BorderRadius.circular(15),
             child: Container(
               decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(AppImages.papan),
-                      fit: BoxFit.cover
-                  ),
+                image: DecorationImage(
+                    image: AssetImage(AppImages.papan),
+                    fit: BoxFit.cover
+                ),
 
               ),
               width: widget.size.width,
@@ -460,12 +461,12 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
                         .where((slideObject) => !slideObject.empty)
                         .map((slideObject) {
                       return AnimatedPositioned(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
+                        duration: const Duration(milliseconds: 150),
+                        curve: Curves.easeOut,
                         left: slideObject.posCurrent.dx,
                         top: slideObject.posCurrent.dy,
                         child: GestureDetector(
-                          onTap: _isGameActive && !isShuffling
+                          onTap: (_isGameActive && !isShuffling && !isAutoSolving)
                               ? () => changePos(slideObject.indexCurrent)
                               : null,
                           child: SizedBox(
@@ -495,10 +496,45 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
                               child: Stack(
                                 children: [
                                   if (slideObject.image != null)
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(6),
-                                      child: slideObject.image!,
+                                    RepaintBoundary(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(6),
+                                        child: slideObject.image!,
+                                      ),
                                     ),
+                                  // TAMBAHAN: Label angka di pojok kiri atas
+                                  Positioned(
+                                    top: 4,
+                                    left: 4,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withValues(alpha: .7),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(alpha: .5),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        '${slideObject.indexDefault}',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: widget.sizePuzzle <= 4 ? 16 : 12,
+                                          shadows: const [
+                                            Shadow(
+                                              color: Colors.black,
+                                              blurRadius: 2,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -520,6 +556,30 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
                             SizedBox(height: 15),
                             Text(
                               'Mengacak Puzzle...',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  // Auto-solving overlay
+                  if (isAutoSolving)
+                    Container(
+                      color: Colors.black.withValues(alpha: .5),
+                      child: const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+                            ),
+                            SizedBox(height: 15),
+                            Text(
+                              'Menyelesaikan Puzzle...',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -556,17 +616,16 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
               ),
             ),
             ElevatedButton.icon(
-              onPressed: () async{
+              onPressed: (isShuffling || isAutoSolving || !startSlide) ? null : () async{
                 var oldChange = await Preferences.getChange();
-                if(oldChange != 0 || startSlide || isShuffling){
-                  reversePuzzle();
+                if(oldChange != 0){
+                  await reversePuzzle();
                   await Preferences.setChange((oldChange -= 1));
+                  if(!context.mounted)return;
+                  context.read<UserProvider>().getChange();
                 }
-                if(!context.mounted)return;
-                context.read<UserProvider>().getChange();
-
               },
-              icon: const Icon(Icons.replay),
+              icon: const Icon(Icons.auto_fix_high),
               label: const Text('Selesaikan'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[400],
@@ -651,6 +710,7 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
               : Image.memory(
             image.encodePng(tempCrop),
             fit: BoxFit.contain,
+            gaplessPlayback: true,
           ),
         );
       },
@@ -660,31 +720,27 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
 
     process = [];
 
-    int totalMoves = widget.sizePuzzle * 30; // Lebih banyak gerakan untuk shuffle lebih baik
+    // Optimized shuffle - record the tile that was moved, not empty position
+    int totalMoves = widget.sizePuzzle * 20;
     for (var i = 0; i < totalMoves; i++) {
       SlideObject slideObjectEmpty = getEmptyObject();
       int emptyIndex = slideObjectEmpty.indexCurrent;
-      process.add(emptyIndex);
 
       List<int> possibleMoves = [];
       int row = emptyIndex ~/ widget.sizePuzzle;
       int col = emptyIndex % widget.sizePuzzle;
 
-      // Ambil semua gerakan yang valid
-      if (col > 0) possibleMoves.add(emptyIndex - 1); // Kiri
-      if (col < widget.sizePuzzle - 1) possibleMoves.add(emptyIndex + 1); // Kanan
-      if (row > 0) possibleMoves.add(emptyIndex - widget.sizePuzzle); // Atas
-      if (row < widget.sizePuzzle - 1) possibleMoves.add(emptyIndex + widget.sizePuzzle); // Bawah
+      if (col > 0) possibleMoves.add(emptyIndex - 1);
+      if (col < widget.sizePuzzle - 1) possibleMoves.add(emptyIndex + 1);
+      if (row > 0) possibleMoves.add(emptyIndex - widget.sizePuzzle);
+      if (row < widget.sizePuzzle - 1) possibleMoves.add(emptyIndex + widget.sizePuzzle);
 
       if (possibleMoves.isNotEmpty) {
         int randKey = possibleMoves[Random().nextInt(possibleMoves.length)];
-        changePosWithoutCheck(randKey);
-      }
 
-      // Update UI setiap beberapa gerakan
-      if (i % 10 == 0) {
-        setState(() {});
-        await Future.delayed(const Duration(milliseconds: 10));
+        // PENTING: Simpan index tile yang akan dipindahkan, bukan empty position
+        process.add(randKey);
+        changePosWithoutCheck(randKey);
       }
     }
 
@@ -791,6 +847,9 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
     if (rangeMoves.isNotEmpty) {
       _moveCount++; // Tambah counter gerakan
 
+      // PENTING: Catat gerakan user ke process
+      process.add(indexCurrent);
+
       int tempIndex = rangeMoves[0].indexCurrent;
       Offset tempPos = rangeMoves[0].posCurrent;
 
@@ -841,18 +900,43 @@ class _SlidePuzzleWidgetState extends State<SlidePuzzleWidget> with SingleTicker
   }
 
   Future<void> reversePuzzle() async {
+    if (slideObjects == null || process.isEmpty) return;
+
+    _stopTimer();
+    isAutoSolving = true;
     startSlide = true;
     finishSwap = true;
     setState(() {});
 
-    await Stream.fromIterable(process.reversed)
-        .asyncMap((event) async =>
-    await Future.delayed(const Duration(milliseconds: 50))
-        .then((value) => changePosWithoutCheck(event)))
-        .toList();
+    // Batch updates for better performance
+    int batchSize = 3;
+    for (int i = 0; i < process.length; i += batchSize) {
+      int end = (i + batchSize < process.length) ? i + batchSize : process.length;
+
+      for (int j = process.length - 1 - i; j >= process.length - end && j >= 0; j--) {
+        changePosWithoutCheck(process[j]);
+      }
+
+      setState(() {});
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
 
     process = [];
+    isAutoSolving = false;
+    success = true;
     setState(() {});
+
+    // Wait a bit before showing the winner dialog
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if(!mounted) return;
+
+    // Show winner dialog
+    context.go('/winner', extra: {
+      'level': widget.level,
+      'move': _moveCount,
+      'timer': 'Auto-Solved',
+    });
   }
 }
 
